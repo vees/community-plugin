@@ -2,43 +2,6 @@
 
 add_filter('the_content', 'opendays_page_handler');
 
-function list_of_gce()
-{
-	$string = file_get_contents('https://www.google.com/calendar/feeds/' .
-		'dgif6f88nm2oas7mp4s6mugvlc%40group.calendar.google.com/public/full?' . 
-		'alt=jsonc&start-min=2013-01-01T00:00:00&start-max=2014-12-31T00:00:00&max-results=500');
-
-	$var = json_decode($string);
-
-	#print_r($var);
-
-	foreach ($var->data->items as $item)
-	{
-		#print_r($item->when);
-		print $item->when[0]->start . "\n";
-		print $item->when[0]->end . "\n";
-	}
-}
-
-function list_of_weekends()
-{
-	$daysToSat = 6 - date("w");
-
-	$firstSat = date('Y-m-d', strtotime(date("Y-m-d") . " + $daysToSat days"));
-
-	print "$daysToSat Days to Saturday\n"; 
-	print "First Saturday is $firstSat\n";
-
-	for ($weekCount = 0; $weekCount <= 52; $weekCount++)
-	{
-		print $weekCount . ": ";
-		print date('Y-m-d', strtotime($firstSat . " + " . $weekCount*7 . " days"));
-		print ", ";
-		print date('Y-m-d', strtotime($firstSat . " + " . ($weekCount*7+1) . " days"));
-		print "\n";
-	}
-}
-
 function list_of_saturdays()
 {
 	$daysToSat = 6 - date("w");

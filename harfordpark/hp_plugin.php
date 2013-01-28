@@ -3,7 +3,7 @@
 Plugin Name: Harford Park
 Plugin URI: http://www.harfordpark.org/
 Description: Harford Park Features
-Version: 0.1
+Version: 1.0
 Author: Rob Carlson
 Author URI: https://vees.net/
 License: Open Sores
