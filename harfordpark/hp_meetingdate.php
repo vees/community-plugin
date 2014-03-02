@@ -9,7 +9,7 @@ function media_page_handler($text)
 	$day = strtotime("$this_month thursday");
 	if ($day == false) {
 		$next_meeting = "the first Thursday of the month"; }
-	else if ($day < time()) {
+	else if ($day < time()-86400) {
 		$this_month = date("F Y", strtotime("next month first day"));
 		$day = strtotime("$this_month thursday");
 		$next_meeting = date("l, F jS", $day); 

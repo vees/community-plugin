@@ -28,7 +28,7 @@ function strikeout_taken_days($saturdays)
 {
 	$string = file_get_contents('https://www.google.com/calendar/feeds/' .
 		'dgif6f88nm2oas7mp4s6mugvlc%40group.calendar.google.com/public/full?' . 
-		'alt=jsonc&start-min=2013-01-01T00:00:00&start-max=2014-12-31T00:00:00&max-results=500');
+		'alt=jsonc&start-min=2014-01-01T00:00:00&start-max=2015-12-31T00:00:00&max-results=500');
 
 	$var = json_decode($string);
 
@@ -65,6 +65,9 @@ function get_saturday_key($gce1)
 function opendays_page_handler($text)
 {
 	global $wpdb;
+
+	if (strpos($text, '%opendays%') === FALSE) 
+		return $text;
 
 	$saturdays = list_of_saturdays();
 	$saturdays = strikeout_taken_days($saturdays);
