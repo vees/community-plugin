@@ -24,21 +24,56 @@ function list_of_saturdays()
 	return $saturdays;
 }
 
-function strikeout_taken_days($saturdays)
+function get_google_calendar_feed()
 {
-	$string = file_get_contents('https://www.google.com/calendar/feeds/' .
-		'dgif6f88nm2oas7mp4s6mugvlc%40group.calendar.google.com/public/full?' . 
-		'alt=jsonc&start-min=2014-01-01T00:00:00&start-max=2015-12-31T00:00:00&max-results=500');
+	$filename = 'https://www.google.com/calendar/feeds/' .
+                'dgif6f88nm2oas7mp4s6mugvlc%40group.calendar.google.com/public/full?' .
+                'alt=jsonc&start-min=2014-01-01T00:00:00&start-max=2015-12-31T00:00:00&max-results=500';
+	$filename="/home/hpca/cache/46c68ed4180acf6a33ecbb829bd7cddd.html";
+	$string = file_get_contents($filename);
 
 	$var = json_decode($string);
+	return $var;
+}
 
+function showing_day_list($google_feed)
+{
+	$showing_days = array();
+	$var = $google_feed;
+	foreach ($var->data->items as $item)
+	{
+		if ($item->title == "Hall Showing")
+		{
+			foreach ($item->when as $when)
+			{
+				$showday = $when->start;
+				$showing_days[] = $showday;
+			}
+		}
+	}
+
+	sort($showing_days);
+
+	$showing_days = array_slice($showing_days, 0, 10);
+	$showdays_output.="<ul>\n";
+	
+	foreach($showing_days as $showday)
+	{
+		$showdays_output .= "<li>" . date('l F j', strtotime($showday)). "\n";
+	}
+	$showdays_output .= "</ul>\n";
+
+	return $showdays_output;
+}
+
+function strikeout_taken_days($saturdays, $google_feed)
+{
+	$var = $google_feed;
 	foreach ($var->data->items as $item)
 	{
 		$saturdayKey = get_saturday_key($item->when[0]->start);
-		#print $saturdayKey . "\n";
 		if (isset($saturdays[$saturdayKey]))
 		{
-			#unset($saturdays[$saturdayKey]);
 			$saturdays[$saturdayKey] = "<strike>$saturdays[$saturdayKey]</strike>";
 		}	
 	}
@@ -48,7 +83,6 @@ function strikeout_taken_days($saturdays)
 function get_saturday_key($gce1)
 {
 	$gce1 = substr($gce1, 0, 10);
-	#echo "$gce1 to:\n";
 	$dayOfWeek = date("w", strtotime($gce1));
 	if ($dayOfWeek == 6)
 	{
@@ -66,11 +100,12 @@ function opendays_page_handler($text)
 {
 	global $wpdb;
 
-	if (strpos($text, '%opendays%') === FALSE) 
+	if (strpos($text, '%opendays%') === FALSE && strpos($text, '%showings%') === FALSE) 
 		return $text;
 
+	$google_feed = get_google_calendar_feed();
 	$saturdays = list_of_saturdays();
-	$saturdays = strikeout_taken_days($saturdays);
+	$saturdays = strikeout_taken_days($saturdays, $google_feed);
 
 	$output_list = "<ul>\n";
 	foreach ($saturdays as $weekend)
@@ -79,9 +114,16 @@ function opendays_page_handler($text)
 	}
 	$output_list .= "</ul>\n";
 
-	return str_replace("%opendays%", $output_list, $text);
+	$showings = showing_day_list($google_feed);
+	#print $showings;
+
+	$outtext = str_replace("%opendays%", $output_list, $text);
+	$outtext = str_replace("%showings%", $showings, $outtext);
+
+	return $outtext;
 }
 
 #print opendays_page_handler('%opendays%');
+#print opendays_page_handler('%showings%');
 
 ?>
