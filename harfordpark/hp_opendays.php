@@ -28,7 +28,7 @@ function get_google_calendar_feed()
 {
 	$filename = 'https://www.google.com/calendar/feeds/' .
                 'dgif6f88nm2oas7mp4s6mugvlc%40group.calendar.google.com/public/full?' .
-                'alt=jsonc&start-min=2014-01-01T00:00:00&start-max=2015-12-31T00:00:00&max-results=500';
+                'alt=jsonc&start-min=2014-01-01T00:00:00&start-max=2015-12-31T00:00:00&max-results=1000';
 	$filename="/home/hpca/cache/46c68ed4180acf6a33ecbb829bd7cddd.html";
 	$string = file_get_contents($filename);
 
@@ -42,7 +42,7 @@ function showing_day_list($google_feed)
 	$var = $google_feed;
 	foreach ($var->data->items as $item)
 	{
-		if ($item->title == "Hall Showing")
+		if ($item->title == "Hall Showing" || $item->title == "Hall Viewing")
 		{
 			foreach ($item->when as $when)
 			{
@@ -60,6 +60,10 @@ function showing_day_list($google_feed)
 	foreach($showing_days as $showday)
 	{
 		$showdays_output .= "<li>" . date('l F j', strtotime($showday)). "\n";
+	}
+	if (count($showing_days) == 0)
+	{
+		$showdays_output .= "<li>No showings are currently scheduled.</li>\n";
 	}
 	$showdays_output .= "</ul>\n";
 
