@@ -11,5 +11,6 @@ License: Open Sores
 
 require_once('hp_meetingdate.php');
 require_once('hp_opendays.php');
+require_once('hp_codeenforcement.php');
 
 ?>

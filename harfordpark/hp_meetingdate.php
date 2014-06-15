@@ -5,6 +5,10 @@ add_filter('the_content', 'media_page_handler');
 function media_page_handler($text)
 {
 	global $wpdb;
+
+ 	if (strpos($text, '%next_meeting%') === FALSE)
+                return $text;
+
 	$this_month = date("F Y");
 	$day = strtotime("$this_month thursday");
 	if ($day == false) {
