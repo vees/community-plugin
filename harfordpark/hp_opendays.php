@@ -1,6 +1,8 @@
 <?php
 
-add_filter('the_content', 'opendays_page_handler');
+if (php_sapi_name() != 'cli') {
+	add_filter('the_content', 'opendays_page_handler');
+}
 
 function list_of_saturdays()
 {
@@ -76,10 +78,14 @@ function strikeout_taken_days($saturdays, $google_feed)
 	foreach ($var->data->items as $item)
 	{
 		$saturdayKey = get_saturday_key($item->when[0]->start);
-		if (isset($saturdays[$saturdayKey]))
+		if ($item->title == "Residents Only")
+		{
+			$saturdays[$saturdayKey] .= " <strong>(Residents Only)</strong>";
+		}
+		else if (isset($saturdays[$saturdayKey]) && ($item->title == "Busy" || $item->title == "Do Not Rent"))
 		{
 			$saturdays[$saturdayKey] = "<strike>$saturdays[$saturdayKey]</strike>";
-		}	
+		}
 	}
 	return $saturdays;
 }
@@ -126,8 +132,10 @@ function opendays_page_handler($text)
 
 	return $outtext;
 }
-
-#print opendays_page_handler('%opendays%');
-#print opendays_page_handler('%showings%');
+if (php_sapi_name() == 'cli')
+{
+	print opendays_page_handler('%opendays%');
+	print opendays_page_handler('%showings%');
+}
 
 ?>
