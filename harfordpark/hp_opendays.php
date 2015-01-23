@@ -50,7 +50,8 @@ function showing_day_list($google_feed)
 	{
 		if ($item->summary == "Hall Showing" || $item->summary == "Hall Viewing")
 		{
-			$showing_days[] = $item->start->dateTime;
+			if (!empty($item->start->dateTime)) $showing_days[] = $item->start->dateTime;
+			else if (!empty($item->start->date)) $showing_days[] = $item->start->date;
 		}
 	}
 
